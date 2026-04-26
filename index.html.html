@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TPS Challenge List</title>
+  <style>
+    body {font-family: Arial, sans-serif; background:#2c2f33; color:white; margin:0;}
+    header {background:#23272a; padding:20px; text-align:center; font-size:28px; font-weight:bold; position:relative;}
+
+    .discord-btn {
+      position:absolute; right:20px; top:20px;
+      background:#5865F2; color:white; padding:10px 15px;
+      border-radius:8px; text-decoration:none; font-size:14px;
+    }
+
+    .container {width:90%; max-width:1000px; margin:20px auto;}
+
+    .level {display:flex; background:#40444b; margin-bottom:10px; border-radius:10px; overflow:hidden; cursor:pointer;}
+    .level:hover {background:#4f545c;}
+
+    .thumbnail {width:220px; height:120px; background-size:cover; background-position:center;}
+    .info {padding:15px; flex:1;}
+    .title {font-size:22px; font-weight:bold;}
+    .creator {font-style:italic; color:#ccc;}
+
+    .details {display:none; background:#36393f; padding:15px; border-radius:0 0 10px 10px; margin-bottom:15px;}
+
+    iframe {width:100%; height:300px; border:none; border-radius:10px; margin-top:10px;}
+
+    table {width:100%; border-collapse:collapse; margin-top:15px;}
+    th, td {padding:8px; text-align:left;}
+    th {background:#202225;}
+    tr:nth-child(even) {background:#2f3136;}
+    a {color:lightblue; text-decoration:none;}
+  </style>
+</head>
+<body>
+
+<header>
+  TPS Challenge List
+  <a class="discord-btn" href="https://discord.gg/gA5pxnNSrZ" target="_blank">Discord</a>
+</header>
+
+<div class="container" id="list"></div>
+
+<script>
+const levels = [
+  {
+    placement: 1,
+    name: "Illusion of Hell",
+    creator: "Exen",
+    tps: 16742,
+    verifier: "PlayerX",
+    fps: "360",
+    video: "dQw4w9WgXcQ",
+    records: [
+      {player:"Parker", percent:100, video:"https://youtu.be/dQw4w9WgXcQ"},
+      {player:"Darkyy", percent:100, video:"https://youtu.be/dQw4w9WgXcQ"},
+      {player:"Raphyy", percent:98, video:"https://youtu.be/dQw4w9WgXcQ"}
+    ]
+  },
+  {
+    placement: 2,
+    name: "Example Challenge",
+    creator: "You",
+    tps: 15000,
+    verifier: "PlayerA",
+    fps: "360",
+    video: "dQw4w9WgXcQ",
+    records: [
+      {player:"Player1", percent:100, video:"https://youtu.be/dQw4w9WgXcQ"},
+      {player:"Player2", percent:95, video:"https://youtu.be/dQw4w9WgXcQ"}
+    ]
+  }
+];
+
+levels.sort((a,b)=>a.placement-b.placement);
+
+const container = document.getElementById("list");
+
+levels.forEach(level=>{
+
+  // ordenar records por porcentaje
+  level.records.sort((a,b)=>b.percent-a.percent);
+
+  const div = document.createElement("div");
+  div.innerHTML = `
+
+  <div class="level" onclick="toggleDetails(this)">
+    <a href="https://www.youtube.com/watch?v=${level.video}" target="_blank" onclick="event.stopPropagation()">
+      <div class="thumbnail" style="background-image:url('https://img.youtube.com/vi/${level.video}/0.jpg')"></div>
+    </a>
+
+    <div class="info">
+      <div class="title">#${level.placement} - ${level.name}</div>
+      <div class="creator">${level.creator}</div>
+    </div>
+  </div>
+
+  <div class="details">
+    <b>TPS:</b> ${level.tps}<br>
+    <b>Verifier:</b> ${level.verifier}<br>
+    <b>FPS:</b> ${level.fps}
+
+    <iframe src="https://www.youtube.com/embed/${level.video}" allowfullscreen></iframe>
+
+    <h3>Records</h3>
+    <table>
+      <tr>
+        <th>Player</th>
+        <th>%</th>
+        <th>Video</th>
+      </tr>
+      ${level.records.map(r=>`
+        <tr>
+          <td>${r.player}</td>
+          <td>${r.percent}%</td>
+          <td><a href="${r.video}" target="_blank">Watch</a></td>
+        </tr>
+      `).join("")}
+    </table>
+  </div>
+
+  `;
+
+  container.appendChild(div);
+});
+
+function toggleDetails(el){
+  let d = el.nextElementSibling;
+  d.style.display = d.style.display === "block" ? "none" : "block";
+}
+</script>
+
+</body>
+</html>
