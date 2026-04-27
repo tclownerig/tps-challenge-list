@@ -82,15 +82,14 @@
       border: 1px solid #666;
     }
 
-    .btn:hover {
-      opacity: 0.85;
-    }
+    .btn:hover { opacity: 0.85; }
 
-    .level-page {
+    .level-page, .rules-box {
       background: rgba(54, 57, 63, 0.95);
       border-radius: 16px;
       padding: 22px;
       border: 1px solid rgba(255,255,255,0.08);
+      margin-bottom: 25px;
     }
 
     .level-header {
@@ -138,8 +137,8 @@
       width: 100%;
       border-collapse: collapse;
       margin-top: 15px;
-      overflow: hidden;
       border-radius: 10px;
+      overflow: hidden;
     }
 
     th, td {
@@ -147,33 +146,13 @@
       text-align: left;
     }
 
-    th {
-      background: #202225;
-    }
-
-    tr:nth-child(even) {
-      background: #2f3136;
-    }
-
-    tr:nth-child(odd) {
-      background: #36393f;
-    }
+    th { background: #202225; }
+    tr:nth-child(even) { background: #2f3136; }
+    tr:nth-child(odd) { background: #36393f; }
 
     a {
       color: #8cc8ff;
       text-decoration: none;
-    }
-
-    .rules-box {
-      background: rgba(54, 57, 63, 0.95);
-      border-radius: 16px;
-      padding: 22px;
-      border: 1px solid rgba(255,255,255,0.08);
-      margin-top: 25px;
-    }
-
-    .rules-box li {
-      margin-bottom: 8px;
     }
 
     .empty {
@@ -191,9 +170,7 @@
         margin-top: 15px;
       }
 
-      iframe {
-        height: 240px;
-      }
+      iframe { height: 240px; }
     }
   </style>
 </head>
@@ -253,6 +230,7 @@ if (!level) {
             <span class="tag">FPS: ${level.fps}</span>
             <span class="tag">Level ID: ${level.levelId}</span>
             <span class="tag">Points: ${level.points}</span>
+            <span class="tag">Records: ${level.records.length}</span>
           </div>
 
           <br>
@@ -275,30 +253,33 @@ if (!level) {
               <th>#</th>
               <th>Player</th>
               <th>%</th>
+              <th>Points</th>
               <th>Video</th>
             </tr>
 
             ${level.records.map((r, i) => `
               <tr>
                 <td>${i + 1}</td>
-                <td>${r.player}</td>
+                <td><a href="player.html?name=${encodeURIComponent(r.player)}">${r.player}</a></td>
                 <td>${r.percent}%</td>
+                <td>${r.percent >= 100 ? level.points : 0}</td>
                 <td><a href="${r.video}" target="_blank">Watch</a></td>
               </tr>
             `).join("")}
           </table>
         `
       }
+    </div>
 
-      <div class="rules-box">
-        <h3>Record Rules</h3>
-        <ul>
-          <li>Completion must be done at <b>${level.tps} TPS</b>.</li>
-          <li>Small TPS margin may be allowed if approved by list staff.</li>
-          <li>Video proof, clicks, Cheat Indicator, FPS and TPS are required.</li>
-          <li>Any hacked or suspicious completion may be rejected.</li>
-        </ul>
-      </div>
+    <div class="rules-box">
+      <h3>Record Rules</h3>
+      <ul>
+        <li>Completion must be done at <b>${level.tps} TPS</b>.</li>
+        <li>Small TPS margin may be allowed if approved by list staff.</li>
+        <li>Video proof, clicks, Cheat Indicator, FPS and TPS are required.</li>
+        <li>Only <b>100%</b> records give points in the global player ranking.</li>
+        <li>Any hacked or suspicious completion may be rejected.</li>
+      </ul>
     </div>
   `;
 }
