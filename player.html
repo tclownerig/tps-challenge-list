@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TPS Challenge List - Player</title>
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: radial-gradient(circle at top, #3a3f4b 0%, #1f2127 55%, #111217 100%);
+      color: white;
+      margin: 0;
+      min-height: 100vh;
+    }
+
+    header {
+      background: rgba(20, 22, 28, 0.95);
+      padding: 22px 20px;
+      text-align: center;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      border-bottom: 1px solid #444;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 32px;
+      letter-spacing: 1px;
+    }
+
+    header p {
+      margin: 8px 0 0;
+      color: #bbb;
+      font-size: 14px;
+    }
+
+    .discord-btn {
+      position: absolute;
+      right: 20px;
+      top: 22px;
+      background: #5865F2;
+      color: white;
+      padding: 10px 15px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .container {
+      width: 92%;
+      max-width: 1100px;
+      margin: 25px auto;
+    }
+
+    .top-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 25px;
+    }
+
+    .btn {
+      border: none;
+      cursor: pointer;
+      background: #5865F2;
+      color: white;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-weight: bold;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn-secondary {
+      background: #36393f;
+      border: 1px solid #666;
+    }
+
+    .btn:hover { opacity: 0.85; }
+
+    .section-box {
+      background: rgba(54, 57, 63, 0.95);
+      border-radius: 16px;
+      padding: 22px;
+      border: 1px solid rgba(255,255,255,0.08);
+      margin-bottom: 25px;
+    }
+
+    .player-title {
+      font-size: 32px;
+      margin-bottom: 8px;
+    }
+
+    .stats {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 15px;
+    }
+
+    .tag {
+      background: #202225;
+      padding: 8px 12px;
+      border-radius: 20px;
+      font-size: 14px;
+      color: #ddd;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    th, td {
+      padding: 11px;
+      text-align: left;
+    }
+
+    th { background: #202225; }
+    tr:nth-child(even) { background: #2f3136; }
+    tr:nth-child(odd) { background: #36393f; }
+
+    a {
+      color: #8cc8ff;
+      text-decoration: none;
+    }
+
+    .empty {
+      color: #aaa;
+      font-style: italic;
+    }
+
+    @media (max-width: 700px) {
+      header h1 { font-size: 24px; }
+
+      .discord-btn {
+        position: static;
+        display: inline-block;
+        margin-top: 15px;
+      }
+
+      table {
+        font-size: 13px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <h1>TPS Challenge List</h1>
+  <p>Fixed TPS Geometry Dash challenges under 30 seconds</p>
+  <a class="discord-btn" href="https://discord.gg/gA5pxnNSrZ" target="_blank">Discord</a>
+</header>
+
+<div class="container">
+
+  <div class="top-actions">
+    <a class="btn btn-secondary" href="index.html">← Back to List</a>
+    <a class="btn btn-secondary" href="https://discord.gg/gA5pxnNSrZ" target="_blank">Join Discord</a>
+  </div>
+
+  <div id="playerProfile"></div>
+
+</div>
+
+<script src="levels.js"></script>
+
+<script>
+const params = new URLSearchParams(window.location.search);
+const playerName = params.get("name");
+const profile = document.getElementById("playerProfile");
+
+function getPlayerProfile(name) {
+  const player = {
+    name: name,
+    points: 0,
+    records: 0,
+    completions: 0,
+    bestPercent: 0,
+    recordsList: []
+  };
+
+  levels.forEach(level => {
+    level.records.forEach(record => {
+      if (record.player === name) {
+        const earnedPoints = record.percent >= 100 ? Number(level.points) : 0;
+
+        player.records += 1;
+        player.points += earnedPoints;
+
+        if (record.percent >= 100) {
+          player.completions += 1;
+        }
+
+        if (record.percent > player.bestPercent) {
+          player.bestPercent = record.percent;
+        }
+
+        player.recordsList.push({
+          levelName: level.name,
+          placement: level.placement,
+          percent: record.percent,
+          video: record.video,
+          points: earnedPoints
+        });
+      }
+    });
+  });
+
+  player.recordsList.sort((a, b) => {
+    if (b.points !== a.points) return b.points - a.points;
+    return b.percent - a.percent;
+  });
+
+  return player;
+}
+
+if (!playerName) {
+  profile.innerHTML = `
+    <div class="section-box">
+      <h2>Player not found</h2>
+      <p>No player selected.</p>
+    </div>
+  `;
+} else {
+  const player = getPlayerProfile(playerName);
+
+  if (player.records === 0) {
+    profile.innerHTML = `
+      <div class="section-box">
+        <h2>Player not found</h2>
+        <p>This player has no records.</p>
+      </div>
+    `;
+  } else {
+    profile.innerHTML = `
+      <div class="section-box">
+        <div class="player-title">${player.name}</div>
+        <p>Player profile and submitted records.</p>
+
+        <div class="stats">
+          <span class="tag">Points: ${player.points}</span>
+          <span class="tag">Completions: ${player.completions}</span>
+          <span class="tag">Records: ${player.records}</span>
+          <span class="tag">Best %: ${player.bestPercent}%</span>
+        </div>
+      </div>
+
+      <div class="section-box">
+        <h2>Records</h2>
+
+        <table>
+          <tr>
+            <th>#</th>
+            <th>Challenge</th>
+            <th>%</th>
+            <th>Points</th>
+            <th>Video</th>
+          </tr>
+
+          ${player.recordsList.map((record, index) => `
+            <tr>
+              <td>#${index + 1}</td>
+              <td>
+                <a href="challenge.html?id=${record.placement}">
+                  ${record.levelName}
+                </a>
+              </td>
+              <td>${record.percent}%</td>
+              <td>${record.points}</td>
+              <td><a href="${record.video}" target="_blank">Watch</a></td>
+            </tr>
+          `).join("")}
+        </table>
+      </div>
+    `;
+  }
+}
+</script>
+
+</body>
+</html>
