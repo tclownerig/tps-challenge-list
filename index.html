@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>TPS Challenge List</title>
+
   <style>
     body {font-family: Arial, sans-serif; background:#2c2f33; color:white; margin:0;}
     header {background:#23272a; padding:20px; text-align:center; font-size:28px; font-weight:bold; position:relative;}
@@ -16,25 +17,49 @@
 
     .container {width:90%; max-width:1000px; margin:20px auto;}
 
-    .level {display:flex; background:#40444b; margin-bottom:10px; border-radius:10px; overflow:hidden; cursor:pointer;}
-    .level:hover {background:#4f545c;}
+    .level {
+      display:flex; background:#40444b; margin-bottom:10px;
+      border-radius:10px; overflow:hidden; cursor:pointer;
+      transition:0.2s;
+    }
+
+    .level:hover {
+      background:#4f545c;
+      transform:scale(1.01);
+    }
 
     .thumbnail {width:220px; height:120px; background-size:cover; background-position:center;}
     .info {padding:15px; flex:1;}
     .title {font-size:22px; font-weight:bold;}
     .creator {font-style:italic; color:#ccc;}
 
-    .details {display:none; background:#36393f; padding:15px; border-radius:0 0 10px 10px; margin-bottom:15px;}
+    .stats {
+      margin-top:10px;
+      color:#ddd;
+      font-size:14px;
+    }
 
-    iframe {width:100%; height:300px; border:none; border-radius:10px; margin-top:10px;}
-
-    table {width:100%; border-collapse:collapse; margin-top:15px;}
-    th, td {padding:8px; text-align:left;}
-    th {background:#202225;}
-    tr:nth-child(even) {background:#2f3136;}
     a {color:lightblue; text-decoration:none;}
+
+    @media(max-width:700px){
+      header {font-size:22px;}
+      .discord-btn {
+        position:static;
+        display:inline-block;
+        margin-top:15px;
+      }
+
+      .level {
+        flex-direction:column;
+      }
+
+      .thumbnail {
+        width:100%;
+      }
+    }
   </style>
 </head>
+
 <body>
 
 <header>
@@ -44,77 +69,34 @@
 
 <div class="container" id="list"></div>
 
+<script src="levels.js"></script>
+
 <script>
-const levels = [
-  {
-    placement: 1,
-    name: "Stairs Of Despair",
-    creator: "Boingmd",
-    tps: 32767,
-    verifier: "Boingmd",
-    fps: "480",
-    video: "MdgwQK6Zf0w",
-    records: [
-      
-    ]
-  }
-];
-
-levels.sort((a,b)=>a.placement-b.placement);
-
 const container = document.getElementById("list");
 
-levels.forEach(level=>{
-
-  // ordenar records por porcentaje
-  level.records.sort((a,b)=>b.percent-a.percent);
-
+levels.forEach(level => {
   const div = document.createElement("div");
+
   div.innerHTML = `
-
-  <div class="level" onclick="toggleDetails(this)">
-    <a href="https://www.youtube.com/watch?v=${level.video}" target="_blank" onclick="event.stopPropagation()">
+    <div class="level" onclick="openChallenge(${level.placement})">
       <div class="thumbnail" style="background-image:url('https://img.youtube.com/vi/${level.video}/0.jpg')"></div>
-    </a>
 
-    <div class="info">
-      <div class="title">#${level.placement} - ${level.name}</div>
-      <div class="creator">${level.creator}</div>
+      <div class="info">
+        <div class="title">#${level.placement} - ${level.name}</div>
+        <div class="creator">${level.creator}</div>
+
+        <div class="stats">
+          TPS: ${level.tps} · FPS: ${level.fps} · Verified by ${level.verifier}
+        </div>
+      </div>
     </div>
-  </div>
-
-  <div class="details">
-    <b>TPS:</b> ${level.tps}<br>
-    <b>Verifier:</b> ${level.verifier}<br>
-    <b>FPS:</b> ${level.fps}
-
-    <iframe src="https://www.youtube.com/embed/${level.video}" allowfullscreen></iframe>
-
-    <h3>Records</h3>
-    <table>
-      <tr>
-        <th>Player</th>
-        <th>%</th>
-        <th>Video</th>
-      </tr>
-      ${level.records.map(r=>`
-        <tr>
-          <td>${r.player}</td>
-          <td>${r.percent}%</td>
-          <td><a href="${r.video}" target="_blank">Watch</a></td>
-        </tr>
-      `).join("")}
-    </table>
-  </div>
-
   `;
 
   container.appendChild(div);
 });
 
-function toggleDetails(el){
-  let d = el.nextElementSibling;
-  d.style.display = d.style.display === "block" ? "none" : "block";
+function openChallenge(id) {
+  window.location.href = `challenge.html?id=${id}`;
 }
 </script>
 
