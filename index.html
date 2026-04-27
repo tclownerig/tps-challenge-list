@@ -1,60 +1,173 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>TPS Challenge List</title>
 
   <style>
-    body {font-family: Arial, sans-serif; background:#2c2f33; color:white; margin:0;}
-    header {background:#23272a; padding:20px; text-align:center; font-size:28px; font-weight:bold; position:relative;}
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: radial-gradient(circle at top, #3a3f4b 0%, #1f2127 55%, #111217 100%);
+      color: white;
+      margin: 0;
+      min-height: 100vh;
+    }
+
+    header {
+      background: rgba(20, 22, 28, 0.95);
+      padding: 22px 20px;
+      text-align: center;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      border-bottom: 1px solid #444;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 32px;
+      letter-spacing: 1px;
+    }
+
+    header p {
+      margin: 8px 0 0;
+      color: #bbb;
+      font-size: 14px;
+    }
 
     .discord-btn {
-      position:absolute; right:20px; top:20px;
-      background:#5865F2; color:white; padding:10px 15px;
-      border-radius:8px; text-decoration:none; font-size:14px;
+      position: absolute;
+      right: 20px;
+      top: 22px;
+      background: #5865F2;
+      color: white;
+      padding: 10px 15px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: bold;
     }
 
-    .container {width:90%; max-width:1000px; margin:20px auto;}
-
-    .level {
-      display:flex; background:#40444b; margin-bottom:10px;
-      border-radius:10px; overflow:hidden; cursor:pointer;
-      transition:0.2s;
+    .container {
+      width: 92%;
+      max-width: 1100px;
+      margin: 25px auto;
     }
 
-    .level:hover {
-      background:#4f545c;
-      transform:scale(1.01);
+    .top-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 25px;
     }
 
-    .thumbnail {width:220px; height:120px; background-size:cover; background-position:center;}
-    .info {padding:15px; flex:1;}
-    .title {font-size:22px; font-weight:bold;}
-    .creator {font-style:italic; color:#ccc;}
+    .btn {
+      border: none;
+      cursor: pointer;
+      background: #5865F2;
+      color: white;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-weight: bold;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn-secondary {
+      background: #36393f;
+      border: 1px solid #666;
+    }
+
+    .btn:hover {
+      opacity: 0.85;
+    }
+
+    .level-card {
+      display: flex;
+      background: rgba(64, 68, 75, 0.95);
+      margin-bottom: 14px;
+      border-radius: 14px;
+      overflow: hidden;
+      cursor: pointer;
+      border: 1px solid rgba(255,255,255,0.08);
+      transition: transform 0.15s, background 0.15s;
+    }
+
+    .level-card:hover {
+      background: #4f545c;
+      transform: translateY(-2px);
+    }
+
+    .thumbnail {
+      width: 230px;
+      min-width: 230px;
+      height: 130px;
+      background-size: cover;
+      background-position: center;
+      position: relative;
+    }
+
+    .placement {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(0,0,0,0.75);
+      padding: 6px 10px;
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 18px;
+    }
+
+    .info {
+      padding: 18px;
+      flex: 1;
+    }
+
+    .title {
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 6px;
+    }
+
+    .creator {
+      color: #ccc;
+      margin-bottom: 12px;
+    }
 
     .stats {
-      margin-top:10px;
-      color:#ddd;
-      font-size:14px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
     }
 
-    a {color:lightblue; text-decoration:none;}
+    .tag {
+      background: #202225;
+      padding: 6px 10px;
+      border-radius: 20px;
+      font-size: 13px;
+      color: #ddd;
+    }
 
-    @media(max-width:700px){
-      header {font-size:22px;}
+    @media (max-width: 700px) {
+      header h1 { font-size: 24px; }
+
       .discord-btn {
-        position:static;
-        display:inline-block;
-        margin-top:15px;
+        position: static;
+        display: inline-block;
+        margin-top: 15px;
       }
 
-      .level {
-        flex-direction:column;
+      .level-card {
+        flex-direction: column;
       }
 
       .thumbnail {
-        width:100%;
+        width: 100%;
+        min-width: 100%;
       }
     }
   </style>
@@ -63,41 +176,55 @@
 <body>
 
 <header>
-  TPS Challenge List
+  <h1>TPS Challenge List</h1>
+  <p>Fixed TPS Geometry Dash challenges under 30 seconds</p>
   <a class="discord-btn" href="https://discord.gg/gA5pxnNSrZ" target="_blank">Discord</a>
 </header>
 
-<div class="container" id="list"></div>
+<div class="container">
+
+  <div class="top-actions">
+    <a class="btn" href="index.html">Challenge List</a>
+    <a class="btn btn-secondary" href="https://discord.gg/gA5pxnNSrZ" target="_blank">Join Discord</a>
+  </div>
+
+  <div id="list"></div>
+
+</div>
 
 <script src="levels.js"></script>
 
 <script>
-const container = document.getElementById("list");
+const listContainer = document.getElementById("list");
 
-levels.forEach(level => {
-  const div = document.createElement("div");
+levels.forEach((level, index) => {
+  const card = document.createElement("div");
+  card.className = "level-card";
 
-  div.innerHTML = `
-    <div class="level" onclick="openChallenge(${level.placement})">
-      <div class="thumbnail" style="background-image:url('https://img.youtube.com/vi/${level.video}/0.jpg')"></div>
+  card.innerHTML = `
+    <div class="thumbnail" style="background-image:url('https://img.youtube.com/vi/${level.video}/hqdefault.jpg')">
+      <div class="placement">#${index + 1}</div>
+    </div>
 
-      <div class="info">
-        <div class="title">#${level.placement} - ${level.name}</div>
-        <div class="creator">${level.creator}</div>
+    <div class="info">
+      <div class="title">${level.name}</div>
+      <div class="creator">by ${level.creator}</div>
 
-        <div class="stats">
-          TPS: ${level.tps} · FPS: ${level.fps} · Verified by ${level.verifier}
-        </div>
+      <div class="stats">
+        <span class="tag">TPS: ${level.tps}</span>
+        <span class="tag">FPS: ${level.fps}</span>
+        <span class="tag">Verifier: ${level.verifier}</span>
+        <span class="tag">Records: ${level.records.length}</span>
       </div>
     </div>
   `;
 
-  container.appendChild(div);
-});
+  card.addEventListener("click", () => {
+    window.location.href = `challenge.html?id=${level.placement}`;
+  });
 
-function openChallenge(id) {
-  window.location.href = `challenge.html?id=${id}`;
-}
+  listContainer.appendChild(card);
+});
 </script>
 
 </body>
