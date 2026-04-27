@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TPS Challenge List - Changelog</title>
+  <style>
+* { box-sizing: border-box; }
+
+body {
+  font-family: Arial, sans-serif;
+  background: radial-gradient(circle at top, #3a3f4b 0%, #1f2127 55%, #111217 100%);
+  color: white;
+  margin: 0;
+  min-height: 100vh;
+}
+
+header {
+  background: rgba(20, 22, 28, 0.95);
+  padding: 22px 20px;
+  text-align: center;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  border-bottom: 1px solid #444;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 32px;
+  letter-spacing: 1px;
+}
+
+header p {
+  margin: 8px 0 0;
+  color: #bbb;
+  font-size: 14px;
+}
+
+.discord-btn {
+  position: absolute;
+  right: 20px;
+  top: 22px;
+  background: #5865F2;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.container {
+  width: 92%;
+  max-width: 1100px;
+  margin: 25px auto;
+}
+
+.top-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 25px;
+}
+
+.btn {
+  border: none;
+  cursor: pointer;
+  background: #5865F2;
+  color: white;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-weight: bold;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.btn-secondary {
+  background: #36393f;
+  border: 1px solid #666;
+}
+
+.btn:hover {
+  opacity: 0.85;
+  transform: translateY(-1px);
+}
+
+.section-box, .level-page, .rules-box {
+  background: rgba(54, 57, 63, 0.95);
+  border-radius: 16px;
+  padding: 22px;
+  border: 1px solid rgba(255,255,255,0.08);
+  margin-bottom: 25px;
+}
+
+.level-card {
+  display: flex;
+  background: rgba(64, 68, 75, 0.95);
+  margin-bottom: 14px;
+  border-radius: 14px;
+  overflow: hidden;
+  cursor: pointer;
+  border: 1px solid rgba(255,255,255,0.08);
+  transition: transform 0.18s, background 0.18s, box-shadow 0.18s;
+}
+
+.level-card:hover {
+  background: #4f545c;
+  transform: translateY(-3px) scale(1.01);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+}
+
+.thumbnail {
+  width: 230px;
+  min-width: 230px;
+  height: 130px;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+}
+
+.placement {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: rgba(0,0,0,0.75);
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.info {
+  padding: 18px;
+  flex: 1;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 6px;
+}
+
+.creator {
+  color: #ccc;
+  margin-bottom: 12px;
+}
+
+.stats {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+
+.tag {
+  background: #202225;
+  padding: 6px 10px;
+  border-radius: 20px;
+  font-size: 13px;
+  color: #ddd;
+}
+
+.badge {
+  background: #5865F2;
+  padding: 6px 10px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: bold;
+  color: white;
+  display: inline-block;
+  margin: 2px;
+}
+
+.badge-gold { background: #b8860b; }
+.badge-green { background: #258f5a; }
+.badge-red { background: #9b2c2c; }
+.badge-gray { background: #555; }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+th, td {
+  padding: 11px;
+  text-align: left;
+}
+
+th { background: #202225; }
+tr:nth-child(even) { background: #2f3136; }
+tr:nth-child(odd) { background: #36393f; }
+
+tr.clickable {
+  cursor: pointer;
+  transition: 0.15s;
+}
+
+tr.clickable:hover {
+  background: #4f545c;
+}
+
+a {
+  color: #8cc8ff;
+  text-decoration: none;
+}
+
+.empty {
+  color: #aaa;
+  font-style: italic;
+}
+
+.rank-medal {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.filter-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+
+.filter-row button {
+  border: 1px solid #666;
+  background: #36393f;
+  color: white;
+  padding: 9px 13px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.filter-row button.active {
+  background: #5865F2;
+}
+
+.level-header {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+
+.level-header img {
+  width: 360px;
+  max-width: 100%;
+  border-radius: 12px;
+}
+
+.level-data {
+  flex: 1;
+  min-width: 260px;
+}
+
+iframe {
+  width: 100%;
+  height: 420px;
+  border: none;
+  border-radius: 12px;
+  margin-top: 20px;
+}
+
+.progress-bar {
+  background: #202225;
+  border-radius: 999px;
+  overflow: hidden;
+  height: 12px;
+  margin-top: 6px;
+}
+
+.progress-fill {
+  height: 100%;
+  background: #5865F2;
+}
+
+@media (max-width: 700px) {
+  header h1 { font-size: 24px; }
+
+  .discord-btn {
+    position: static;
+    display: inline-block;
+    margin-top: 15px;
+  }
+
+  .level-card { flex-direction: column; }
+
+  .thumbnail {
+    width: 100%;
+    min-width: 100%;
+  }
+
+  iframe { height: 240px; }
+
+  table { font-size: 13px; }
+}
+</style>
+</head>
+<body>
+<header>
+  <h1>TPS Challenge List</h1>
+  <p>Changelog</p>
+  <a class="discord-btn" href="https://discord.gg/gA5pxnNSrZ" target="_blank">Discord</a>
+</header>
+
+<div class="container">
+  <div id="menu"></div>
+  <div class="section-box"><h2>Changelog</h2><div id="changelogBox"></div></div>
+</div>
+
+<script src="levels.js"></script>
+<script>
+function playerSlug(name) {
+  return encodeURIComponent(name);
+}
+
+function levelSlug(level) {
+  return encodeURIComponent(level.name.toLowerCase().replaceAll(" ", "-"));
+}
+
+function getStatusBadge(status) {
+  if (status === "verified") return `<span class="badge badge-green">✔ Verified</span>`;
+  if (status === "pending") return `<span class="badge badge-gold">⏳ Pending</span>`;
+  if (status === "rejected") return `<span class="badge badge-red">✖ Rejected</span>`;
+  return `<span class="badge badge-gray">Unknown</span>`;
+}
+
+function getListLabel(type) {
+  if (type === "main") return "Main List";
+  if (type === "extended") return "Extended List";
+  if (type === "legacy") return "Legacy List";
+  return "Main List";
+}
+
+function getPlayerData() {
+  const players = {};
+
+  levels.forEach(level => {
+    level.records.forEach(record => {
+      if (!players[record.player]) {
+        players[record.player] = {
+          name: record.player,
+          points: 0,
+          records: 0,
+          completions: 0,
+          bestPercent: 0,
+          hardestPlacement: null,
+          hardestLevel: null,
+          allRecords: [],
+          badges: []
+        };
+      }
+
+      const earnedPoints = Math.round(Number(level.points) * (record.percent / 100));
+
+      players[record.player].records += 1;
+      players[record.player].points += earnedPoints;
+
+      if (record.percent > players[record.player].bestPercent) {
+        players[record.player].bestPercent = record.percent;
+      }
+
+      if (record.percent >= 100) {
+        players[record.player].completions += 1;
+
+        if (
+          players[record.player].hardestPlacement === null ||
+          level.placement < players[record.player].hardestPlacement
+        ) {
+          players[record.player].hardestPlacement = level.placement;
+          players[record.player].hardestLevel = level.name;
+        }
+      }
+
+      players[record.player].allRecords.push({
+        levelName: level.name,
+        placement: level.placement,
+        percent: record.percent,
+        video: record.video,
+        points: earnedPoints
+      });
+    });
+  });
+
+  const sorted = Object.values(players).sort((a, b) => {
+    if (b.points !== a.points) return b.points - a.points;
+    if (b.completions !== a.completions) return b.completions - a.completions;
+    return b.bestPercent - a.bestPercent;
+  });
+
+  sorted.forEach((player, index) => {
+    if (index === 0) player.badges.push("🥇 Top 1");
+    if (index < 3) player.badges.push("🏆 Top 3");
+    if (index < 10) player.badges.push("🔥 Top 10");
+    if (player.completions > 0) player.badges.push("💯 Completion");
+  });
+
+  return sorted;
+}
+
+function getGlobalStats() {
+  const players = getPlayerData();
+  const allRecords = levels.flatMap(level => level.records.map(record => ({ level, record })));
+  const hardestTPS = levels.length ? Math.max(...levels.map(level => Number(level.tps))) : 0;
+  const verifiedLevels = levels.filter(level => level.status === "verified").length;
+
+  return {
+    totalLevels: levels.length,
+    totalRecords: allRecords.length,
+    totalPlayers: players.length,
+    hardestTPS,
+    verifiedLevels
+  };
+}
+
+function rankIcon(index) {
+  if (index === 0) return "🥇";
+  if (index === 1) return "🥈";
+  if (index === 2) return "🥉";
+  return "#" + (index + 1);
+}
+
+function menu(active) {
+  return `
+    <div class="top-actions">
+      <a class="btn ${active === "list" ? "" : "btn-secondary"}" href="index.html">Challenge List</a>
+      <a class="btn ${active === "rankings" ? "" : "btn-secondary"}" href="rankings.html">Player Rankings</a>
+      <a class="btn ${active === "players" ? "" : "btn-secondary"}" href="players.html">Players</a>
+      <a class="btn ${active === "changelog" ? "" : "btn-secondary"}" href="changelog.html">Changelog</a>
+      <a class="btn btn-secondary" href="https://discord.gg/gA5pxnNSrZ" target="_blank">Join Discord</a>
+    </div>
+  `;
+}
+</script>
+<script>
+document.getElementById("menu").innerHTML = menu("changelog");
+
+const box = document.getElementById("changelogBox");
+
+if (!changelog || changelog.length === 0) {
+  box.innerHTML = `<p class="empty">No updates yet.</p>`;
+} else {
+  box.innerHTML = changelog.map(update => `
+    <div class="section-box">
+      <h3>Version ${update.version} · ${update.date}</h3>
+      <ul>
+        ${update.changes.map(change => `<li>${change}</li>`).join("")}
+      </ul>
+    </div>
+  `).join("");
+}
+
+</script>
+</body>
+</html>
