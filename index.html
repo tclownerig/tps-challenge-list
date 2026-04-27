@@ -82,8 +82,14 @@
       border: 1px solid #666;
     }
 
-    .btn:hover {
-      opacity: 0.85;
+    .btn:hover { opacity: 0.85; }
+
+    .section-box {
+      background: rgba(54, 57, 63, 0.95);
+      border-radius: 16px;
+      padding: 22px;
+      border: 1px solid rgba(255,255,255,0.08);
+      margin-bottom: 25px;
     }
 
     .level-card {
@@ -152,6 +158,47 @@
       color: #ddd;
     }
 
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    th, td {
+      padding: 11px;
+      text-align: left;
+    }
+
+    th { background: #202225; }
+    tr:nth-child(even) { background: #2f3136; }
+    tr:nth-child(odd) { background: #36393f; }
+
+    tr.clickable {
+      cursor: pointer;
+      transition: 0.15s;
+    }
+
+    tr.clickable:hover {
+      background: #4f545c;
+    }
+
+    a {
+      color: #8cc8ff;
+      text-decoration: none;
+    }
+
+    .empty {
+      color: #aaa;
+      font-style: italic;
+    }
+
+    .rank-medal {
+      font-size: 18px;
+      font-weight: bold;
+    }
+
     @media (max-width: 700px) {
       header h1 { font-size: 24px; }
 
@@ -161,13 +208,15 @@
         margin-top: 15px;
       }
 
-      .level-card {
-        flex-direction: column;
-      }
+      .level-card { flex-direction: column; }
 
       .thumbnail {
         width: 100%;
         min-width: 100%;
+      }
+
+      table {
+        font-size: 13px;
       }
     }
   </style>
@@ -188,7 +237,21 @@
     <a class="btn btn-secondary" href="https://discord.gg/gA5pxnNSrZ" target="_blank">Join Discord</a>
   </div>
 
-  <div id="list"></div>
+  <div class="section-box">
+    <h2>Challenge List</h2>
+    <div id="list"></div>
+  </div>
+
+  <div class="section-box">
+    <h2>Player Ranking</h2>
+    <p>Points are calculated automatically from 100% records.</p>
+    <div id="playerRanking"></div>
+  </div>
+
+  <div class="section-box">
+    <h2>Players</h2>
+    <div id="playersTable"></div>
+  </div>
 
 </div>
 
@@ -196,35 +259,165 @@
 
 <script>
 const listContainer = document.getElementById("list");
+const playerRanking = document.getElementById("playerRanking");
+const playersTable = document.getElementById("playersTable");
 
-levels.forEach((level, index) => {
-  const card = document.createElement("div");
-  card.className = "level-card";
+function playerSlug(name) {
+  return encodeURIComponent(name);
+}
 
-  card.innerHTML = `
-    <div class="thumbnail" style="background-image:url('https://img.youtube.com/vi/${level.video}/hqdefault.jpg')">
-      <div class="placement">#${index + 1}</div>
-    </div>
+function rankIcon(index) {
+  if (index === 0) return "🥇";
+  if (index === 1) return "🥈";
+  if (index === 2) return "🥉";
+  return "#" + (index + 1);
+}
 
-    <div class="info">
-      <div class="title">${level.name}</div>
-      <div class="creator">by ${level.creator}</div>
+function renderLevels() {
+  listContainer.innerHTML = "";
 
-      <div class="stats">
-        <span class="tag">TPS: ${level.tps}</span>
-        <span class="tag">FPS: ${level.fps}</span>
-        <span class="tag">Verifier: ${level.verifier}</span>
-        <span class="tag">Records: ${level.records.length}</span>
+  levels.forEach((level, index) => {
+    const card = document.createElement("div");
+    card.className = "level-card";
+
+    card.innerHTML = `
+      <div class="thumbnail" style="background-image:url('https://img.youtube.com/vi/${level.video}/hqdefault.jpg')">
+        <div class="placement">#${index + 1}</div>
       </div>
-    </div>
-  `;
 
-  card.addEventListener("click", () => {
-    window.location.href = `challenge.html?id=${level.placement}`;
+      <div class="info">
+        <div class="title">${level.name}</div>
+        <div class="creator">by ${level.creator}</div>
+
+        <div class="stats">
+          <span class="tag">TPS: ${level.tps}</span>
+          <span class="tag">FPS: ${level.fps}</span>
+          <span class="tag">Verifier: ${level.verifier}</span>
+          <span class="tag">Points: ${level.points}</span>
+          <span class="tag">Records: ${level.records.length}</span>
+        </div>
+      </div>
+    `;
+
+    card.addEventListener("click", () => {
+      window.location.href = `challenge.html?id=${level.placement}`;
+    });
+
+    listContainer.appendChild(card);
+  });
+}
+
+function getPlayerData() {
+  const players = {};
+
+  levels.forEach(level => {
+    level.records.forEach(record => {
+      if (!players[record.player]) {
+        players[record.player] = {
+          name: record.player,
+          points: 0,
+          records: 0,
+          completions: 0,
+          bestPercent: 0,
+          completedLevels: [],
+          allRecords: []
+        };
+      }
+
+      players[record.player].records += 1;
+
+      if (record.percent > players[record.player].bestPercent) {
+        players[record.player].bestPercent = record.percent;
+      }
+
+      players[record.player].allRecords.push({
+        levelName: level.name,
+        placement: level.placement,
+        percent: record.percent,
+        video: record.video,
+        points: record.percent >= 100 ? Number(level.points) : 0
+      });
+
+      if (record.percent >= 100) {
+        players[record.player].points += Number(level.points);
+        players[record.player].completions += 1;
+        players[record.player].completedLevels.push(level.name);
+      }
+    });
   });
 
-  listContainer.appendChild(card);
-});
+  return Object.values(players);
+}
+
+function renderPlayerRanking() {
+  const players = getPlayerData().sort((a, b) => {
+    if (b.points !== a.points) return b.points - a.points;
+    if (b.completions !== a.completions) return b.completions - a.completions;
+    return b.bestPercent - a.bestPercent;
+  });
+
+  if (players.length === 0) {
+    playerRanking.innerHTML = `<p class="empty">No players yet.</p>`;
+    return;
+  }
+
+  playerRanking.innerHTML = `
+    <table>
+      <tr>
+        <th>Rank</th>
+        <th>Player</th>
+        <th>Points</th>
+        <th>Completions</th>
+        <th>Records</th>
+        <th>Best %</th>
+      </tr>
+
+      ${players.map((player, index) => `
+        <tr class="clickable" onclick="window.location.href='player.html?name=${playerSlug(player.name)}'">
+          <td class="rank-medal">${rankIcon(index)}</td>
+          <td><b>${player.name}</b></td>
+          <td>${player.points}</td>
+          <td>${player.completions}</td>
+          <td>${player.records}</td>
+          <td>${player.bestPercent}%</td>
+        </tr>
+      `).join("")}
+    </table>
+  `;
+}
+
+function renderPlayersTable() {
+  const players = getPlayerData().sort((a, b) => a.name.localeCompare(b.name));
+
+  if (players.length === 0) {
+    playersTable.innerHTML = `<p class="empty">No players yet.</p>`;
+    return;
+  }
+
+  playersTable.innerHTML = `
+    <table>
+      <tr>
+        <th>#</th>
+        <th>Player</th>
+        <th>Points</th>
+        <th>Profile</th>
+      </tr>
+
+      ${players.map((player, index) => `
+        <tr class="clickable" onclick="window.location.href='player.html?name=${playerSlug(player.name)}'">
+          <td>#${index + 1}</td>
+          <td>${player.name}</td>
+          <td>${player.points}</td>
+          <td>View Profile →</td>
+        </tr>
+      `).join("")}
+    </table>
+  `;
+}
+
+renderLevels();
+renderPlayerRanking();
+renderPlayersTable();
 </script>
 
 </body>
